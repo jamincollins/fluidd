@@ -6,6 +6,8 @@
     muted
     :style="cameraStyle"
     :crossorigin="crossorigin"
+    @play="updateStatus('connected')"
+    @error="updateStatus('error')"
   />
 </template>
 
