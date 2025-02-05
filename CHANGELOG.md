@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.31.4-k2-2](https://github.com/jamincollins/fluidd/compare/v1.31.4-k2..v1.31.4-k2-2) (2024-02-05)
+
+### Features
+
+* **Camera** adds status for the Creality K2 camera ([7e9315176236b1](https://github.com/jamincollins/fluidd/commit/76236b1c8995cf8e5e5fccbfcd3f2a54e5ab61e9))
+
 ## [1.31.4-k2](https://github.com/jamincollins/fluidd/compare/v1.31.4..v1.31.4-k2) (2024-02-04)
 
 ### Features
