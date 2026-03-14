@@ -5,7 +5,6 @@ import Components from 'unplugin-vue-components/vite'
 import { VuetifyResolver } from 'unplugin-vue-components/resolvers'
 import path from 'path'
 import content from '@originjs/vite-plugin-content'
-import monacoEditorEsmPlugin from 'vite-plugin-monaco-editor-esm'
 import checker from 'vite-plugin-checker'
 import version from './vite.config.inject-version'
 
@@ -91,9 +90,6 @@ export default defineConfig({
     vue(),
     version(),
     content(),
-    monacoEditorEsmPlugin({
-      languageWorkers: ['editorWorkerService', 'json', 'css']
-    }),
     checker({
       vueTsc: {
         tsconfigPath: path.resolve(__dirname, './tsconfig.app.json')
