@@ -58,12 +58,13 @@ export default class PrinterWidget extends Mixins(StateMixin) {
 - **Auto-imported** (no manual import needed): components in `src/components/common/`, `layout/`, `ui/` — via `unplugin-vue-components` with `VuetifyResolver`
 - **Manual import** required: widget components, view components
 - **Lazy-loaded**: `EChart` via `Vue.component('EChart', () => import('./vue-echarts-chunk'))`
-- Generated types: `components.d.ts` at repo root
+- Generated types: `components.d.ts` at repo root — **auto-generated, do not edit manually**
 
 ## Development Workflow
 
 ### Build Toolchain
 
+- **Node.js 24** — pinned in `.node-version` (engines: `^22.12.0 || ^24`)
 - **Vite 8** — build tool and dev server
 - **`@pedrolamas/plugin-vue2`** — Vue 2 SFC support for Vite
 - **`unplugin-vue-components/rolldown`** — auto-imports components from `src/components/common|layout|ui`
@@ -73,6 +74,7 @@ export default class PrinterWidget extends Mixins(StateMixin) {
 - **ESLint flat config** (`eslint.config.mjs`) — enforced at dev time via `vite-plugin-checker` with `useFlatConfig: true`
 - **`vite-plugin-checker`** — runs vue-tsc and ESLint during dev (disabled at build time)
 - **`skott`** — circular dependency detection (`npm run circular-check`)
+- **ES2020 lib target** (`tsconfig.app.json`) — no ES2021+ built-ins without polyfills
 
 ### Essential Commands
 
@@ -169,6 +171,7 @@ src/
 
 ## Code Style
 
+- Source must pass linting with **zero warnings and zero type errors** — run `npm run lint` and `npm run type-check` before committing
 - Vue class-style components with `vue-property-decorator` (`@Component`, `@Prop`, `@VModel`, `Mixins()`)
 - ESLint enforced: `neostandard` + `pluginVue.configs['flat/vue2-recommended']` + `pluginRegexp` + `@vue/eslint-config-typescript`
 - `.editorconfig` rules: 2 spaces, LF line endings, UTF-8, trim trailing whitespace, max line 100 (code)
@@ -176,7 +179,17 @@ src/
 - Use `consola` for logging, not `console.log` (configured in `src/setupConsola.ts` — warn in prod, verbose in dev)
 - Type imports: `import type { ... }` for types only (`verbatimModuleSyntax: true`)
 - `satisfies` keyword for store module type checking
-- Conventional commits required: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`, `types`, `i18n`
+
+## Git & Contribution Policy
+
+- **Conventional commits** required: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`, `types`, `i18n`
+- **Commit subject max 50 characters** — hard-enforced by `.husky/commit-msg` hook
+- **Signed-off-by** line required on all commits (use `git commit -s`): `Signed-off-by: Your Name <your@email>`
+- **PR titles must follow conventional commits** — CI-enforced via `amannn/action-semantic-pull-request` (scope optional)
+- **PR branches** must be off a branch other than `develop` or `master`
+- **Clean develop** preferred: squash and rebase feature branches prior to merge
+- **CHANGELOG visibility**: only `feat`, `fix`, `perf`, `refactor` appear in `CHANGELOG.md` (configured in `.versionrc.json`)
+- **CI pipeline order**: `npm ci` → `lint --no-fix` → `type-check` → `test:unit` → `circular-check` → `build`
 
 ## Common Gotchas
 
@@ -188,6 +201,16 @@ src/
 - `@/scss/variables` auto-injected into all SCSS/Sass files via Vite config
 - `path` aliased to `path-browserify` for browser compatibility
 - Strict Vuex mode enabled only in dev (`strict: import.meta.env.DEV`)
+- **SVG files auto-optimized on commit** — pre-commit hook runs SVGO on staged `.svg`, `.vue`, and `src/globals.ts` files
+- **`VUE_` env prefix required** — only env vars prefixed `VUE_` are exposed to app code via `import.meta.env` (Vite `envPrefix`)
+- **`import.meta.env.VERSION`** and **`import.meta.env.HASH`** (short git hash) are injected at build time
+- **`server/config.json`** is the runtime config source (deployed as `dist/config.json`) — contains theme presets, endpoints, hosted flag
+- **Translations managed via Weblate** — do not directly edit non-English locale files in `src/locales/`
+
+## Dev Container
+
+- VSCode Dev Container (`.devcontainer/`) bundles a `docker-klipper-simulavr` container — real Klipper/Moonraker simulation on port 7125, Fluidd on port 8080
+- `postCreateCommand` runs `npm ci && npm run bootstrap` automatically
 
 ## Documentation Site
 
