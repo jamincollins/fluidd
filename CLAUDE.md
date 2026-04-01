@@ -221,7 +221,8 @@ src/
 - Custom CSS: `docs/docs/stylesheets/extra.css` — Fluidd brand colors
 - Glossary: `docs/includes/glossary.md` — abbreviation tooltips auto-appended to all pages
 - Lint: `markdownlint --config docs/.markdownlint.json docs/docs/`
-- Build: `cd docs && zensical build` (requires Python venv with zensical installed)
+- Install: `cd docs && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+- Build: `cd docs && zensical build --clean`
 - Serve: `cd docs && zensical serve` or `npm run serve:docs` (localhost:8000)
 - Deploy: GitHub Actions (`.github/workflows/docs.yml`) — builds on push to `master`, deploys to gh-pages with `docs.fluidd.xyz` CNAME
 
@@ -281,7 +282,7 @@ docs/
 - When introducing acronyms in docs, check if they exist in the glossary — if not, assess whether they should be added (domain-specific or non-obvious acronyms: yes; universally known ones like USB, HTTP, CPU: no)
 - **Before committing docs changes**, always run:
   - `markdownlint --config docs/.markdownlint.json docs/docs/` — must be clean
-  - `codespell docs/docs/` — must be clean (install via `pip install codespell`)
+  - `codespell docs/docs/` — must be clean
 
 ## Communication Style
 
