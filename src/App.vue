@@ -437,7 +437,11 @@ export default class App extends Mixins(StateMixin, FilesMixin, BrowserMixin) {
 
     const shortcut = keyboardEventToKeyboardShortcut(event)
 
-    if (shortcut === 'Ctrl+Shift+E') {
+    if (
+      this.isAppleDevice
+        ? shortcut === 'Meta+Shift+E'
+        : shortcut === 'Ctrl+Shift+E'
+    ) {
       event.preventDefault()
 
       this.emergencyStop()
