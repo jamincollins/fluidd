@@ -63,7 +63,7 @@
             {{ $t('app.general.tooltip.estop') }}
             <template v-if="enableKeyboardShortcuts">
               <br>
-              <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>e</kbd>
+              <kbd v-if="isAppleDevice">&#8984;</kbd><kbd v-else>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>e</kbd>
             </template>
           </span>
         </v-tooltip>

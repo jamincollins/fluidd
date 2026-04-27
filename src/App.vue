@@ -439,7 +439,7 @@ export default class App extends Mixins(StateMixin, FilesMixin, BrowserMixin) {
 
     if (
       this.isAppleDevice
-        ? shortcut === 'Meta+Shift+E'
+        ? shortcut === 'Meta+Shift+e'
         : shortcut === 'Ctrl+Shift+E'
     ) {
       event.preventDefault()
