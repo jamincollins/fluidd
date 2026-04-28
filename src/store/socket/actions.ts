@@ -18,7 +18,7 @@ const MODULES_TO_RESET_ON_DROP = [
   'gcodePreview'
 ] as const
 
-let retryTimeout: number
+let retryTimeout: ReturnType<typeof setTimeout>
 
 // State machine edges. Self-transitions (same → same) are accepted as no-ops.
 const VALID_TRANSITIONS: Record<SocketStatus, readonly SocketStatus[]> = {
@@ -276,7 +276,7 @@ export const actions = {
       // Klippy non-responsive or config error. Retry serverInfo after a delay.
       commit('printer/setPrinterInfo', { state: 'error', state_message: payload.message }, { root: true })
       clearTimeout(retryTimeout)
-      retryTimeout = window.setTimeout(() => {
+      retryTimeout = setTimeout(() => {
         SocketActions.serverInfo()
       }, Globals.KLIPPY_RETRY_DELAY)
     }

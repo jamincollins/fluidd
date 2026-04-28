@@ -6,7 +6,6 @@ import type { ApiConfig, HostConfig, InstanceConfig } from './store/config/types
 import sanitizeEndpoint from './util/sanitize-endpoint'
 import webSocketWrapper from './util/web-socket-wrapper'
 import promiseAny from './util/promise-any'
-import sleep from './util/sleep'
 import md5 from 'md5'
 
 // Load API configuration
@@ -93,25 +92,28 @@ const getApiConfig = async (hostConfig: HostConfig, apiUrlHash?: string | null):
   try {
     const { signal } = abortController
 
-    const defaultOnTimeout = async () => {
-      await sleep(5000, signal)
+    return await promiseAny(
+      endpoints
+        .map(async (endpoint) => {
+          const apiEndpoints = Vue.$filters.getApiUrls(endpoint)
 
-      return {
-        apiUrl: '',
-        socketUrl: ''
-      } satisfies ApiConfig
-    }
+          const result = await webSocketWrapper(apiEndpoints.socketUrl, {
+            timeout: 1200,
+            signal
+          })
 
-    return await promiseAny([
-      ...endpoints.map(async (endpoint) => {
-        const apiEndpoints = Vue.$filters.getApiUrls(endpoint)
+          if (!result.ok) {
+            throw new Error(result.message)
+          }
 
-        await webSocketWrapper(apiEndpoints.socketUrl, signal)
-
-        return apiEndpoints
-      }),
-      defaultOnTimeout()
-    ])
+          return apiEndpoints
+        })
+    )
+  } catch {
+    return {
+      apiUrl: '',
+      socketUrl: ''
+    } satisfies ApiConfig
   } finally {
     abortController.abort()
   }

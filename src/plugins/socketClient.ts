@@ -19,7 +19,7 @@ export class WebSocketClient {
   private store: TypedStore
   private cache: CachedParams | null = null
   private retryCount = 0
-  private reconnectTimeout: number | null = null
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null
 
   constructor (options: SocketPluginOptions) {
     this.store = options.store
@@ -190,7 +190,7 @@ export class WebSocketClient {
     }
 
     this.store.typedDispatch('socket/onSetStatus', 'connecting')
-    this.reconnectTimeout = window.setTimeout(() => {
+    this.reconnectTimeout = setTimeout(() => {
       this.reconnectTimeout = null
       this.openSocket()
     }, EXPONENTIAL_BACKOFF ** this.retryCount * 1000)

@@ -42,7 +42,7 @@ export default class WebrtcMediamtxCamera extends Mixins(CameraMixin) {
   whepUrl: string = ''
   sessionUrl: string = ''
   pc: RTCPeerConnection | null = null
-  restartTimeout: number | null = null
+  restartTimeout: ReturnType<typeof setTimeout> | null = null
   offerData: MediamtxOffer | null = null
   queuedCandidates: RTCIceCandidate[] = []
 
@@ -192,7 +192,7 @@ export default class WebrtcMediamtxCamera extends Mixins(CameraMixin) {
       this.pc = null
     }
 
-    this.restartTimeout = window.setTimeout(() => {
+    this.restartTimeout = setTimeout(() => {
       this.restartTimeout = null
       this.loadStream()
     }, 2000)

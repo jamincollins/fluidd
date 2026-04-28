@@ -130,26 +130,19 @@ export default class AddInstanceDialog extends Mixins(StateMixin) {
       this.abortController = new AbortController()
       const { signal } = this.abortController
 
-      try {
-        await webSocketWrapper(socketUrl, signal)
+      const result = await webSocketWrapper(socketUrl, {
+        timeout: 3000,
+        signal
+      })
 
+      if (result.ok) {
         this.verified = true
-      } catch (e) {
-        if (signal.aborted) return
-
-        if (
-          e != null &&
-          typeof e === 'object' &&
-          'code' in e &&
-          e.code != null
-        ) {
-          this.error = e.code.toString()
-        }
-
+      } else if (result.reason !== 'cancelled') {
+        this.error = result.message
         this.note = this.$t('app.endpoint.error.cant_connect').toString()
-      } finally {
-        this.verifying = false
       }
+
+      this.verifying = false
     }
   }
 
