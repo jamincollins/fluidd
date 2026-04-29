@@ -207,7 +207,7 @@ const klipperConfigMonarchLanguage: Monaco.languages.IMonarchLanguage = {
   tokenizer: {
     root: [
       // Comments
-      [/^#.*$/, 'comment.line.number-sign'],
+      [/#.*$/, 'comment.line.number-sign'],
       [/;.*$/, 'comment.line.gcode'],
 
       // Config block headers: [section_name ...]
