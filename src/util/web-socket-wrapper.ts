@@ -15,17 +15,17 @@ const webSocketWrapper = (url: string, options: CheckWebSocketOptions = {}): Pro
 
   const { timeout, signal, protocols } = options
 
-  const combinedSignal = AbortSignal.any([
-    ...(timeout !== undefined ? [AbortSignal.timeout(timeout)] : []),
-    ...(signal !== undefined ? [signal] : []),
-  ])
+  const timeoutSignal = timeout !== undefined
+    ? AbortSignal.timeout(timeout)
+    : undefined
+
+  const combinedSignal = AbortSignal.any(
+    [timeoutSignal, signal]
+      .filter((x): x is AbortSignal => x !== undefined)
+  )
 
   const getAbortResult = (): WebSocketCheckResult => {
-    if (
-      timeout !== undefined &&
-      combinedSignal.reason instanceof DOMException &&
-      combinedSignal.reason.name === 'TimeoutError'
-    ) {
+    if (timeoutSignal?.aborted) {
       debug('timed out')
 
       return {
@@ -46,7 +46,7 @@ const webSocketWrapper = (url: string, options: CheckWebSocketOptions = {}): Pro
     }
   }
 
-  if (combinedSignal?.aborted) {
+  if (combinedSignal.aborted) {
     return Promise.resolve(getAbortResult())
   }
 
@@ -58,7 +58,7 @@ const webSocketWrapper = (url: string, options: CheckWebSocketOptions = {}): Pro
 
       settled = true
 
-      combinedSignal?.removeEventListener('abort', onAbort)
+      combinedSignal.removeEventListener('abort', onAbort)
 
       if (
         ws.readyState === WebSocket.CONNECTING ||
@@ -121,7 +121,7 @@ const webSocketWrapper = (url: string, options: CheckWebSocketOptions = {}): Pro
       settle(getAbortResult())
     }
 
-    combinedSignal?.addEventListener('abort', onAbort, { once: true })
+    combinedSignal.addEventListener('abort', onAbort, { once: true })
   })
 }
 
