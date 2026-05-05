@@ -40,55 +40,91 @@ export const conf: monaco.languages.LanguageConfiguration = {
 export const language: monaco.languages.IMonarchLanguage = {
   tokenizer: {
     root: [
-      // Blank lines
-      [/^\s*$/, ''],
-
-      // SAVE_CONFIG auto-generated block marker (#*#)
-      [/^\s*#\*#.*$/, 'comment.control.save-config'],
-
-      // Full-line comments — # or ; as first non-whitespace character
-      [/^\s*[#;].*$/, 'comment'],
-
-      // Section headers — SECTCRE is not end-anchored, so everything after
-      // ] is silently discarded at runtime. Tokenise it as a comment.
       [
-        /^(\s*)(\[)([^\]]+)(\])(.*)$/,
-        ['', 'bracket', 'entity.name.section', 'bracket', 'comment'],
+        /^([ \t]*)([^#;=: \t]+(?:[ \t]+[^#;=: \t]+)*)([ \t]*)(=|:)/,
+        ['white', 'keyword', 'white', {
+          cases: {
+            '@eos': { token: 'separator', next: '@checkValue.$1' },
+            '@default': { token: 'separator', next: '@value.$1' }
+          }
+        }]
       ],
 
-      // Key = value  or  key : value
-      //
-      // Safe key pattern: [^=:\s#;](?:[^=:]*[^=:\s])?
-      //   - First char:  non-delimiter, non-whitespace, non-comment-sigil
-      //   - Middle:      anything except = or :  (greedy, optional)
-      //   - Last char:   non-delimiter, non-whitespace  (explicit, prevents
-      //                  \s* from stealing trailing spaces via backtracking)
-      //   - Single-char keys satisfy the outer group alone
       [
-        /^\s*([^=:\s#;](?:[^=:]*[^=:\s])?)\s*(=|:)/,
-        ['variable.name', 'delimiter'],
+        /(\[)([^\]]+)(\])/,
+        ['bracket', 'type.identifier', 'bracket']
       ],
 
-      // Value portion — delegate to klipperValue state
-      { include: '@klipperValue' },
+      [
+        /#\*#.*$/,
+        'comment.control.save-config'
+      ],
 
+      [
+        /[#;].*$/,
+        'comment'
+      ],
+
+      [
+        /[ \t]+/,
+        'white'
+      ],
+
+      [
+        /.*$/,
+        'invalid'
+      ]
     ],
 
-    klipperValue: [
-      // Inline comment — one or more whitespace chars immediately before # or ;.
-      // Monarch processes the remaining string left-to-right, so a lookbehind
-      // on the sigil won't see spaces already consumed by earlier rules.
-      // Instead we match the whitespace + sigil + rest as a unit, returning
-      // two tokens so the space keeps the 'string' colour and only the
-      // sigil onward gets 'comment'.
-      [/([ \t]+)([#;].*)$/, ['string', 'comment']],
+    checkValue: [
+      // Blank line or comment: stay and keep waiting
+      [
+        /^([ \t]*)((?:[#;].*)?)$/,
+        ['white', 'comment']
+      ],
 
-      // Boolean-like constants Klipper recognises via getboolean()
-      [/\b(true|false|yes|no|on|off)\b/i, 'constant.language'],
+      // Continuation: strictly more indented than the key (indent = $S2)
+      [
+        '^$S2(?=[ \t]+[^ \t])',
+        { token: 'white', next: '@value.$S2' }
+      ],
 
-      // Plain value text (no interpolation)
-      [/./, 'string'],
+      // Anything else: not a continuation, return to root without consuming
+      [
+        '',
+        { token: '@rematch', next: '@root' }
+      ]
     ],
+
+    value: [
+      // Comment
+      [
+        /([ \t]+)([#;].*)$/,
+        ['white', { token: 'comment', next: '@checkValue.$S2' }]
+      ],
+
+      // Value
+      [
+        /[^ \t]+(?:[ \t]+[^ \t#;][^ \t]*)*/,
+        {
+          cases: {
+            '@eos': { token: 'string', next: '@checkValue.$S2' },
+            '@default': { token: 'string' }
+          }
+        }
+      ],
+
+      // Empty value
+      [
+        /[ \t]*/,
+        {
+          cases: {
+            '@eos': { token: 'white', next: '@checkValue.$S2' },
+            '@default': { token: 'white' }
+          }
+        }
+      ]
+    ]
   },
 }
 

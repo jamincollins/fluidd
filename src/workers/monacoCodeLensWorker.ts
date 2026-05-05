@@ -27,7 +27,7 @@ const klipperConfigCodeLens = (lines: string[]): MonacoCodeLens[] => {
           }
         })
       } else {
-        const isNotComment = /^\s*[^#;]/.test(lineContent)
+        const isNotComment = /^\s*[^#;\s]/.test(lineContent)
 
         if (isNotComment && state.current) {
           state.current.range = {

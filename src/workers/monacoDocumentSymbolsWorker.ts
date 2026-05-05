@@ -32,7 +32,7 @@ const klipperConfigDocumentSymbols = (lines: string[]): MonacoSymbol[] => {
           children: { result: [] }
         })
       } else {
-        const isNotComment = /^\s*[^#;]/.test(lineContent)
+        const isNotComment = /^\s*[^#;\s]/.test(lineContent)
 
         if (isNotComment && state.current) {
           const property = /^\s*([^=:\s#;](?:[^=:]*[^=:\s])?)\s*[=:]/.exec(lineContent)
