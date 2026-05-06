@@ -82,7 +82,7 @@ const gcodeFoldingRanges = (lines: string[]): MonacoFoldingRange[] => {
 
           case 'end':
             if (state.current && state.current.start === state.current.end) {
-              state.current.end = index
+              state.current.end = index + 1
             }
             break
         }
@@ -259,7 +259,7 @@ self.onmessage = (event: MessageEvent<MonacoLanguageWorkerRequestMessage>) => {
   const message = event.data
 
   try {
-    const lines = message.content.split('\n')
+    const lines = message.lines
 
     switch (message.language) {
       case 'gcode': {

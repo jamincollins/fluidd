@@ -95,7 +95,7 @@ self.onmessage = (event: MessageEvent<MonacoLanguageWorkerRequestMessage>) => {
   const message = event.data
 
   try {
-    const lines = message.content.split('\n')
+    const lines = message.lines
 
     switch (message.language) {
       case 'moonraker-config':
