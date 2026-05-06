@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import type { ActionTree } from 'vuex'
 import type {
   SpoolmanState,
@@ -197,7 +198,7 @@ export const actions = {
         ? 'wss:'
         : 'ws:'
 
-      state.socket = new WebSocket(socketUrl)
+      state.socket = markRaw(new WebSocket(socketUrl))
       state.socket.onerror = err => consola.warn(`${logPrefix} received websocket error`, err)
       state.socket.onmessage = event => {
         let data: WebsocketBasePayload

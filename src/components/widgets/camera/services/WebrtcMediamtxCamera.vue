@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import { Component, Ref, Mixins } from 'vue-property-decorator'
+import { markRaw } from 'vue'
 import CameraMixin from '@/mixins/camera'
 import { consola } from 'consola'
 
@@ -132,7 +133,7 @@ export default class WebrtcMediamtxCamera extends Mixins(CameraMixin) {
         sdpSemantics: 'unified-plan'
       }
 
-      this.pc = new RTCPeerConnection(config)
+      this.pc = markRaw(new RTCPeerConnection(config))
 
       this.pc.addTransceiver('video', { direction: 'recvonly' })
 
