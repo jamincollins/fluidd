@@ -41,23 +41,13 @@ export const language: monaco.languages.IMonarchLanguage = {
   tokenizer: {
     root: [
       [
-        /^([ \t]*)([^#;=: \t]+(?:[ \t]+[^#;=: \t]+)*)([ \t]*)(=|:)/,
-        ['white', 'keyword', 'white', {
-          cases: {
-            '@eos': { token: 'separator', next: '@checkValue.$1' },
-            '@default': { token: 'separator', next: '@value.$1' }
-          }
-        }]
-      ],
-
-      [
-        /(\[)([^\]]+)(\])/,
-        ['bracket', 'type.identifier', 'bracket']
-      ],
-
-      [
-        /#\*#.*$/,
+        /^#\*#.*$/,
         'comment.control.save-config'
+      ],
+
+      [
+        /^([ \t]*)(\[)([^\]]+)(\])/,
+        ['white', 'bracket', 'type.identifier', { token: 'bracket', next: '@content' }]
       ],
 
       [
@@ -76,7 +66,26 @@ export const language: monaco.languages.IMonarchLanguage = {
       ]
     ],
 
+    content: [
+      [
+        /^([ \t]*)([^#;=: \t[]+(?:[ \t]+[^#;=: \t]+)*)([ \t]*)(=|:)/,
+        ['white', 'keyword', 'white', {
+          cases: {
+            '@eos': { token: 'separator', next: '@checkValue.$1' },
+            '@default': { token: 'separator', next: '@value.$1' }
+          }
+        }]
+      ],
+
+      { include: '@root' }
+    ],
+
     checkValue: [
+      [
+        /^#\*#/,
+        { token: '@rematch', next: '@content' }
+      ],
+
       // Blank line or comment: stay and keep waiting
       [
         /^([ \t]*)((?:[#;].*)?)$/,
@@ -89,10 +98,10 @@ export const language: monaco.languages.IMonarchLanguage = {
         { token: 'white', next: '@value.$S2' }
       ],
 
-      // Anything else: not a continuation, return to root without consuming
+      // Anything else: not a continuation, return to content without consuming
       [
         '',
-        { token: '@rematch', next: '@root' }
+        { token: '@rematch', next: '@content' }
       ]
     ],
 
@@ -109,7 +118,7 @@ export const language: monaco.languages.IMonarchLanguage = {
         {
           cases: {
             '@eos': { token: 'string', next: '@checkValue.$S2' },
-            '@default': { token: 'string' }
+            '@default': 'string'
           }
         }
       ],
@@ -120,15 +129,10 @@ export const language: monaco.languages.IMonarchLanguage = {
         {
           cases: {
             '@eos': { token: 'white', next: '@checkValue.$S2' },
-            '@default': { token: 'white' }
+            '@default': 'white'
           }
         }
       ]
     ]
   },
 }
-
-// --- Monaco registration ---
-// monaco.languages.register({ id: 'klipper-config' })
-// monaco.languages.setMonarchTokensProvider('klipper-config', language)
-// monaco.languages.setLanguageConfiguration('klipper-config', conf)

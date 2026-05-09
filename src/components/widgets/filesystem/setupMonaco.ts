@@ -21,7 +21,7 @@ import getVueApp from '@/util/get-vue-app'
 
 import type { KlippyApp } from '@/store/printer/types'
 
-import gcodeMonarchLanguage from '@/monaco/language/gcode.monarch'
+import * as gcodeMonarchLanguage from '@/monaco/language/gcode.monarch'
 import * as klipperConfigMonarchLanguage from '@/monaco/language/klipper-config.monarch'
 import * as moonrakerConfigMonarchLanguage from '@/monaco/language/moonraker-config.monarch'
 import logMonarchLanguage from '@/monaco/language/log.monarch'
@@ -48,15 +48,11 @@ async function setupMonaco () {
   monaco.languages.register({ id: 'moonraker-config', extensions: ['conf'] })
   monaco.languages.register({ id: 'log', extensions: ['log'] })
 
-  monaco.languages.setLanguageConfiguration('gcode', {
-    comments: {
-      lineComment: ';'
-    }
-  })
+  monaco.languages.setLanguageConfiguration('gcode', gcodeMonarchLanguage.conf)
   monaco.languages.setLanguageConfiguration('klipper-config', klipperConfigMonarchLanguage.conf)
   monaco.languages.setLanguageConfiguration('moonraker-config', moonrakerConfigMonarchLanguage.conf)
 
-  monaco.languages.setMonarchTokensProvider('gcode', gcodeMonarchLanguage)
+  monaco.languages.setMonarchTokensProvider('gcode', gcodeMonarchLanguage.language)
   monaco.languages.setMonarchTokensProvider('klipper-config', klipperConfigMonarchLanguage.language)
   monaco.languages.setMonarchTokensProvider('moonraker-config', moonrakerConfigMonarchLanguage.language)
   monaco.languages.setMonarchTokensProvider('log', logMonarchLanguage)
@@ -92,6 +88,26 @@ async function setupMonaco () {
       { token: 'constant.language', foreground: '0000ff' },
       { token: 'string', foreground: 'a31515' },
       { token: 'comment', foreground: '008000', fontStyle: 'italic' },
+      { token: 'tag', foreground: '767676' },
+      { token: 'keyword.command.g', foreground: '267f99', fontStyle: 'bold' },
+      { token: 'keyword.command.m', foreground: '267f99', fontStyle: 'bold' },
+      { token: 'keyword.command.n', foreground: '767676' },
+      { token: 'keyword.command', foreground: '0070c1', fontStyle: 'bold' },
+      { token: 'keyword.macro', foreground: '0070c1', fontStyle: 'bold' },
+      { token: 'keyword.param.e', foreground: '267f99' },
+      { token: 'keyword.param.i', foreground: '267f99' },
+      { token: 'keyword.param.j', foreground: '267f99' },
+      { token: 'keyword.param.k', foreground: '267f99' },
+      { token: 'keyword.param.x', foreground: '267f99' },
+      { token: 'keyword.param.y', foreground: '267f99' },
+      { token: 'keyword.param.z', foreground: '267f99' },
+      { token: 'keyword.param.f', foreground: 'a31515' },
+      { token: 'keyword.param.p', foreground: '7b2fbe' },
+      { token: 'keyword.param.s', foreground: '7b2fbe' },
+      { token: 'keyword.param.t', foreground: '7b2fbe' },
+      { token: 'keyword.param', foreground: '0070c1' },
+      { token: 'operator', foreground: '767676' },
+      { token: 'string.quote', foreground: 'a31515' }
     ],
     colors: {},
   })
@@ -106,6 +122,26 @@ async function setupMonaco () {
       { token: 'constant.language', foreground: '569cd6' },
       { token: 'string', foreground: 'ce9178' },
       { token: 'comment', foreground: '6a9955', fontStyle: 'italic' },
+      { token: 'tag', foreground: '808080' },
+      { token: 'keyword.command.g', foreground: '4ec9b0', fontStyle: 'bold' },
+      { token: 'keyword.command.m', foreground: '4ec9b0', fontStyle: 'bold' },
+      { token: 'keyword.command.n', foreground: '808080' },
+      { token: 'keyword.command', foreground: '9cdcfe', fontStyle: 'bold' },
+      { token: 'keyword.macro', foreground: '9cdcfe', fontStyle: 'bold' },
+      { token: 'keyword.param.e', foreground: '4ec9b0' },
+      { token: 'keyword.param.i', foreground: '4ec9b0' },
+      { token: 'keyword.param.j', foreground: '4ec9b0' },
+      { token: 'keyword.param.k', foreground: '4ec9b0' },
+      { token: 'keyword.param.x', foreground: '4ec9b0' },
+      { token: 'keyword.param.y', foreground: '4ec9b0' },
+      { token: 'keyword.param.z', foreground: '4ec9b0' },
+      { token: 'keyword.param.f', foreground: 'ce9178' },
+      { token: 'keyword.param.p', foreground: 'c586c0' },
+      { token: 'keyword.param.s', foreground: 'c586c0' },
+      { token: 'keyword.param.t', foreground: 'c586c0' },
+      { token: 'keyword.param', foreground: '9cdcfe' },
+      { token: 'operator', foreground: 'd4d4d4' },
+      { token: 'string.quote', foreground: 'ce9178' }
     ],
     colors: {
       'editor.background': '#28282b',
