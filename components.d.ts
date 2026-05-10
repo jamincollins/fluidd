@@ -14,6 +14,7 @@ declare module 'vue' {
     ActionCommandPromptDialog: typeof import('./src/components/common/ActionCommandPromptDialog.vue')['default']
     AddInstanceDialog: typeof import('./src/components/common/AddInstanceDialog.vue')['default']
     AppAnnouncementDismissMenu: typeof import('./src/components/layout/AppAnnouncementDismissMenu.vue')['default']
+    AppAutoScrollContainer: typeof import('./src/components/ui/AppAutoScrollContainer.vue')['default']
     AppBar: typeof import('./src/components/layout/AppBar.vue')['default']
     AppBtn: typeof import('./src/components/ui/AppBtn.vue')['default']
     AppBtnCollapse: typeof import('./src/components/ui/AppBtnCollapse.vue')['default']
