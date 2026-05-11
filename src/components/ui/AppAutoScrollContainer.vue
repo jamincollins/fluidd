@@ -12,7 +12,9 @@
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
 import { markRaw } from 'vue'
 
-@Component
+@Component({
+  inheritAttrs: false
+})
 export default class AppAutoScrollContainer extends Vue {
   @Prop({ type: Boolean })
   readonly reversed?: boolean
