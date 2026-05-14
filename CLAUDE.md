@@ -182,6 +182,18 @@ src/
 - Use `consola` for logging, not `console.log` (configured in `src/setupConsola.ts` — warn in prod, verbose in dev)
 - Type imports: `import type { ... }` for types only (`verbatimModuleSyntax: true`)
 - `satisfies` keyword for store module type checking
+- No double-cast type assertions (`as unknown as T`) — use a proper TypeScript type guard instead (`in`, `typeof`, `instanceof`, or a custom type predicate):
+
+  ```typescript
+  // Bad
+  const x = value as unknown as { test: () => void }
+  x?.test?.()
+
+  // Good
+  if (value && 'test' in value && typeof value.test === 'function') {
+    value.test()
+  }
+  ```
 
 ## Git & Contribution Policy
 
