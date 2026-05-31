@@ -9,13 +9,31 @@
       ref="chart"
       style="overflow: initial;"
       :option="options"
-      :update-options="{ notMerge: true }"
-      :init-options="{ renderer: 'canvas' }"
+      :update-options="updateOptions"
+      :init-options="initOptions"
       autoresize
       @legendselectchanged="handleLegendSelectChanged"
       @legendselected="handleLegendSelectChanged"
       @legendunselected="handleLegendSelectChanged"
     />
+
+    <div class="chart-options">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            icon
+            small
+            tabindex="-1"
+            v-on="on"
+            @click="togglePause"
+          >
+            <v-icon>{{ paused ? '$resume' : '$pause' }}</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ paused ? $t('app.general.btn.resume') : $t('app.general.btn.pause') }}</span>
+      </v-tooltip>
+    </div>
   </div>
 </template>
 
@@ -34,9 +52,24 @@ export default class ThermalChart extends Mixins(BrowserMixin) {
   @Ref('chart')
   readonly chart!: ECharts
 
+  // Stable references so component re-renders (e.g. toggling pause) don't cause
+  // vue-echarts to dispose/re-init the chart or re-apply the options, both of
+  // which would wipe the imperatively-set dataset and blank the chart.
+  readonly updateOptions = Object.freeze({ notMerge: true })
+  readonly initOptions = Object.freeze({ renderer: 'canvas' })
+
   loading = false
+  paused = false
   series: LineSeriesOption[] = []
   initialSelected: Record<string, boolean> = {}
+
+  togglePause () {
+    this.paused = !this.paused
+
+    if (!this.paused) {
+      this.onDataChange(this.chartData)
+    }
+  }
 
   handleLegendSelectChanged (event: { selected: Record<string, boolean> }) {
     this.$typedDispatch('charts/saveSelectedLegends', event.selected)
@@ -73,7 +106,11 @@ export default class ThermalChart extends Mixins(BrowserMixin) {
 
   @Watch('chartData')
   onDataChange (data: any) {
-    if (this.chart && !this.loading) {
+    if (
+      this.chart &&
+      !this.loading &&
+      !this.paused
+    ) {
       this.chart.setOption({
         dataset: {
           source: data
@@ -433,6 +470,16 @@ export default class ThermalChart extends Mixins(BrowserMixin) {
 
 <style lang='scss' scoped>
   .chart {
+    position: relative;
     width: 100%;
+  }
+
+  .chart-options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 0px;
+    margin-right: 16px;
+    z-index: 1;
   }
 </style>
