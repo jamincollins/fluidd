@@ -52,6 +52,14 @@ const tryGetErrorMessageFromJson = (message: string): string | null => {
   return null
 }
 
+const isSocketError = (value: unknown): value is SocketError =>
+  value != null &&
+  typeof value === 'object' &&
+  'code' in value &&
+  typeof value.code === 'number' &&
+  'message' in value &&
+  typeof value.message === 'string'
+
 const getMoonrakerDatabase = async <T = Record<string, unknown>>(namespace: string) => {
   try {
     const response = await SocketActions.serverDatabaseGetItem<T>(undefined, namespace)
@@ -97,12 +105,8 @@ const getAccessToken = async (keys: TokenKeys): Promise<string | null> => {
       // if it's NOT a 401, bail out without touching tokens; otherwise fall
       // through to the clear at the bottom.
       if (
-        !(
-          e != null &&
-          typeof e === 'object' &&
-          'code' in e &&
-          e.code === 401
-        )
+        !isSocketError(e) ||
+        e.code !== 401
       ) {
         return null
       }
@@ -216,9 +220,7 @@ export const actions = {
         // JSON-RPC -32601 ("Method not found"). Warn the user and continue
         // loading unauthenticated through the normal bootstrap → ready path.
         if (
-          e != null &&
-          typeof e === 'object' &&
-          'code' in e &&
+          isSocketError(e) &&
           e.code === -32601
         ) {
           EventBus.$emit(
