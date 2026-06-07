@@ -14,7 +14,7 @@ const FAST_NOTIFY_KEYS = [
 
 export class WebSocketClient {
   private connection: WebSocket | null = null
-  private requests: Request[] = []
+  private requests = new Map<number, Request>()
   private requestId = 0
   private store: TypedStore
   private cache: CachedParams | null = null
@@ -76,12 +76,9 @@ export class WebSocketClient {
         const socketResponse = JSON.parse(message.data) as SocketResponse
 
         if ('id' in socketResponse) {
-          const requestIndex = this.requests
-            .findIndex(request => request.id === socketResponse.id)
+          const request = this.requests.get(socketResponse.id)
 
-          const request = requestIndex > -1
-            ? this.requests.splice(requestIndex, 1)[0]
-            : undefined
+          this.requests.delete(socketResponse.id)
 
           // Remove a wait if defined.
           if (request?.wait?.length) {
@@ -248,7 +245,7 @@ export class WebSocketClient {
             request.dispatch = options.dispatch
             request.commit = options.commit
           }
-          this.requests.push(request)
+          this.requests.set(id, request)
           this.connection.send(JSON.stringify(packet))
         } else {
           consola.debug(`${LOG_PREFIX} Not ready, or closed.`, method, options, this.connection?.readyState)
@@ -264,13 +261,13 @@ export class WebSocketClient {
   clearCacheAndRequests () {
     this.cache = null
 
-    for (const request of this.requests) {
+    for (const request of this.requests.values()) {
       if (request.onRejected) {
         request.onRejected(new Error('Socket disconnected'))
       }
     }
 
-    this.requests = []
+    this.requests.clear()
   }
 }
 
