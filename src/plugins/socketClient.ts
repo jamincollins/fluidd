@@ -205,9 +205,11 @@ export class WebSocketClient {
    * @param method
    * @param params
    */
-  emit (method: string, options?: NotifyOptions) {
+  emit (method: string, options: NotifyOptions = {}) {
     return new Promise((resolve, reject) => {
       try {
+        const { wait, params, dispatch, commit } = options
+
         // Any non-'disconnected' state is eligible to emit; physical readiness
         // is enforced by the readyState check below.
         if (this.store.state.socket.status === 'disconnected') {
@@ -227,24 +229,24 @@ export class WebSocketClient {
             jsonrpc: '2.0'
           }
 
+          if (params) {
+            packet.params = params
+          }
+
           const request: Request = {
             id,
+            dispatch,
+            commit,
+            params,
+            wait,
             onFulfilled: resolve,
             onRejected: reject
           }
 
-          if (options) {
-            if (options.wait) {
-              request.wait = options.wait
-              this.store.typedDispatch('wait/addWait', options.wait)
-            }
-            if (options.params) {
-              packet.params = options.params
-              request.params = options.params
-            }
-            request.dispatch = options.dispatch
-            request.commit = options.commit
+          if (wait) {
+            this.store.typedDispatch('wait/addWait', wait)
           }
+
           this.requests.set(id, request)
           this.connection.send(JSON.stringify(packet))
         } else {

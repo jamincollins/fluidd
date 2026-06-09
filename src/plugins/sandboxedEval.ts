@@ -10,8 +10,8 @@ export interface SandboxedEvalOptions {
   context?: unknown;
 }
 
-const sandboxedEval = async (code: string, options?: SandboxedEvalOptions): Promise<unknown> => {
-  const { feature, timeout = 800, context } = options ?? {}
+const sandboxedEval = async (code: string, options: SandboxedEvalOptions = {}): Promise<unknown> => {
+  const { feature, timeout = 800, context } = options
 
   const id = Date.now()
   const worker = getWorker(feature)
