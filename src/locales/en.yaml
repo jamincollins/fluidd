@@ -86,9 +86,10 @@ app:
     ShowTd1Color: "Show TD-1 Color"
     Unloading: "Unloading"
     UnloadLane: "Unload Lane"
-    Unknown: "Unknown"
     Weight: "Weight"
+    WeightRemaining: "{weight} g remaining"
     WeightSubtitle: "The weight of the filament in grams (without spool)."
+    WeightUsed: "{weight} g used"
   bedmesh:
     label:
       active: active
