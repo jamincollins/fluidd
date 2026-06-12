@@ -117,23 +117,11 @@ export const actions = {
     await dispatch('logout', { invalidate: true })
   },
 
-  async addUser (_, user) {
-    await SocketActions.accessPostUser(user.username, user.password)
-
-    return user
-  },
-
-  async removeUser (_, user) {
-    await SocketActions.accessDeleteUser(user.username)
-
-    return user
-  },
-
-  async onUserCreated ({ commit }, user) {
+  async onUserCreated ({ commit }, user: { username: string }) {
     commit('setAddUser', user)
   },
 
-  async onUserDeleted ({ commit }, user) {
+  async onUserDeleted ({ commit }, user: { username: string }) {
     commit('setRemoveUser', user)
   },
 
