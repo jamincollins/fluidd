@@ -440,7 +440,7 @@ export const actions = {
     dispatch('sensors/onSensorUpdate', payload, { root: true })
   },
 
-  async notifyJobQueueChanged ({ dispatch }, payload: { action: string, queue_state?: Moonraker.JobQueue.QueueState, updated_queue?: Moonraker.JobQueue.QueuedJob[] | null }) {
+  async notifyJobQueueChanged ({ dispatch }, payload: Moonraker.JobQueue.JobQueueChangedResponse) {
     dispatch('jobQueue/onJobQueueChanged', payload, { root: true })
   },
 
