@@ -19,7 +19,7 @@
 
 <script lang='ts'>
 import { Vue, Component, Prop, Watch, Ref } from 'vue-property-decorator'
-import type { ECharts } from 'echarts'
+import type { ECharts, EChartsInitOpts, SetOptionOpts } from 'echarts'
 import { merge } from 'lodash-es'
 
 @Component({})
@@ -42,8 +42,8 @@ export default class AppChart extends Vue {
   // Stable references so component re-renders don't make vue-echarts dispose/
   // re-init the chart or re-apply the options, both of which would wipe the
   // imperatively-set dataset and blank the chart.
-  readonly updateOptions = Object.freeze({ notMerge: true })
-  readonly initOptions = Object.freeze({ renderer: 'canvas' })
+  readonly updateOptions: SetOptionOpts = Object.freeze({ notMerge: true })
+  readonly initOptions: EChartsInitOpts = Object.freeze({ renderer: 'canvas' })
 
   ready = false
 

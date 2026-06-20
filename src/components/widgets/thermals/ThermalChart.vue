@@ -40,7 +40,7 @@
 <script lang='ts'>
 import { markRaw } from 'vue'
 import { Component, Watch, Prop, Ref, Mixins } from 'vue-property-decorator'
-import type { ECharts, EChartsOption, LineSeriesOption } from 'echarts'
+import type { ECharts, EChartsInitOpts, EChartsOption, LineSeriesOption, SetOptionOpts } from 'echarts'
 import getKlipperType from '@/util/get-klipper-type'
 import BrowserMixin from '@/mixins/browser'
 import type { ChartData, ChartSelectedLegends } from '@/store/charts/types'
@@ -56,8 +56,8 @@ export default class ThermalChart extends Mixins(BrowserMixin) {
   // Stable references so component re-renders (e.g. toggling pause) don't cause
   // vue-echarts to dispose/re-init the chart or re-apply the options, both of
   // which would wipe the imperatively-set dataset and blank the chart.
-  readonly updateOptions = Object.freeze({ notMerge: false })
-  readonly initOptions = Object.freeze({ renderer: 'canvas' })
+  readonly updateOptions: SetOptionOpts = Object.freeze({ notMerge: false })
+  readonly initOptions: EChartsInitOpts = Object.freeze({ renderer: 'canvas' })
 
   loading = false
   paused = false
