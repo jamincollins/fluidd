@@ -68,12 +68,15 @@ export default class AppInlineChart extends Vue {
 
     return this.labels.map(label => {
       const value = get(item, label.value)
+      const formattedValue = typeof value === 'number' && value !== 0
+        ? value.toFixed(2)
+        : value
 
       return {
         label,
         value: this.isEmpty(value)
           ? '--'
-          : `${value}${label.suffix ?? ''}`
+          : `${formattedValue}${label.suffix ?? ''}`
       }
     })
   }
